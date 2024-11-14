@@ -1,0 +1,30 @@
+aid: bread
+name: Bread
+description: >-
+  While limited at the moment, we provide a REST API for automating management
+  of your donations. 
+type: Index
+position: Consumer
+access: 3rd-Party
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - API
+created: '2024-11-14'
+modified: '2024-11-14'
+url: https://raw.githubusercontent.com/api-search/bread/refs/heads/main/apis.yml
+specificationVersion: '0.19'
+apis:
+  - aid: bread:bread
+    name: Bread
+    description: >-
+      While limited at the moment, we provide a REST API for automating
+      management of your donations. 
+    humanURL: ' https://bre.ad/doc/api'
+    tags:
+      - API
+    properties:
+      - type: Documentation
+        url: ' https://bre.ad/doc/api'
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com
