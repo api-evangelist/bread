@@ -3,8 +3,7 @@ url: https://raw.githubusercontent.com/api-search/bread/refs/heads/main/apis.yml
 apis:
   - aid: bread:bread
     name: Bread
-    tags:
-      - API
+    tags: []
     humanURL: ' https://bre.ad/doc/api'
     properties:
       - url: ' https://bre.ad/doc/api'
