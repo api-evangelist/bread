@@ -10,8 +10,8 @@ apis:
       - url: ' https://bre.ad/doc/api'
         type: Documentation
     description: >-
-      While limited at the moment, we provide a REST API for automating
-      management of your donations. 
+      While limited at the moment, we provide a REST API for automating management
+      of your donations.
 name: Bread
 tags:
   - Donations
