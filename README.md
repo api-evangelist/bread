@@ -1,42 +1,31 @@
-# Bread (bread)
-While limited at the moment, we provide a REST API for automating management of your donations. 
+# Bread Financial
 
-**URL:** [Visit APIs.json URL](https://raw.githubusercontent.com/api-search/bread/refs/heads/main/apis.yml)
+Bread Financial is a technology-driven financial services company offering white-label buy now pay later (BNPL), installment financing, and branded credit card products for merchants. The platform processes $27 billion in annual sales volume serving 35.6 million active customers across national and emerging retail brands.
 
-## Scope
+## Products
 
-- **Type:** Contract 
-- **Position:** Consuming 
-- **Access:** 3rd-Party 
+- **Bread Pay** - Adaptable installment financing platform for online and in-store checkout
+- **Bread SplitPay** - Short-term split payment financing for retail merchants
+- **Private Label Credit Cards** - White-label branded credit with financing, rewards, and exclusive offers
+- **Co-Branded Credit Cards** - Combined private label and traditional credit card flexibility
 
-## Tags
+## Merchant Impact
 
-- Donations
+- $27 billion in annual sales volume
+- 35.6 million active unique customers
+- 1.5-3x increase in shopping trips for partner merchants
+- 90% partner renewal rate
+- Fast implementation, fully customizable options
 
-## Timestamps
+## Use Cases
 
-- **Created:** 2024-11-14 
-- **Modified:** 2024-12-22 
+- Embed installment financing at checkout (online and in-store)
+- Increase average transaction values with split payment options
+- Build customer loyalty through branded credit programs
+- Drive repeat purchases with financing incentives
 
-## APIs
+## Links
 
-### Bread
-While limited at the moment, we provide a REST API for automating management of your donations. 
-
-**Human URL:** [ https://bre.ad/doc/api]( https://bre.ad/doc/api)
-r
-
-#### Tags
-
-- API
-
-#### Properties
-
-- [Documentation]( https://bre.ad/doc/api)
-
-## Maintainers
-
-**FN:** Kin Lane
-
-**Email:** info@apievangelist.com
-
+- [Website](https://www.breadfinancial.com)
+- [Business Solutions](https://www.breadfinancial.com/en/business-solutions.html)
+- [Developer Documentation](https://developers.breadfinancial.com/)
