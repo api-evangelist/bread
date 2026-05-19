@@ -54,6 +54,10 @@ apis:
       customers to split purchases into manageable payments and helping retailers
       attract price-sensitive customers while increasing average transaction values.
 common:
+  - type: GitHubOrganization
+    url: https://github.com/getbread
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/bread-financial
   - type: Website
     url: https://www.breadfinancial.com
   - type: Documentation
