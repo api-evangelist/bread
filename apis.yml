@@ -54,6 +54,8 @@ apis:
       customers to split purchases into manageable payments and helping retailers
       attract price-sensitive customers while increasing average transaction values.
 common:
+  - type: DomainSecurity
+    url: security/bread-domain-security.yml
   - type: GitHubOrganization
     url: https://github.com/getbread
   - type: LinkedIn
