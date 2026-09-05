@@ -1,0 +1,63 @@
+generated: '2026-09-04'
+method: derived
+source: >-
+  the nine first-party OpenAPI definitions in openapi/ plus https://platform-docs.breadpayments.com/bread-onboarding/docs/integration-testing and
+  https://platform-docs.breadpayments.com/bread-developers/docs/api-access
+provider: Bread Financial
+providerId: bread
+description: >-
+  Versioning, deprecation and operational-transparency posture for the BreadPay Platform API.
+
+versioning:
+  scheme: major version in path + X-API-VERSION request header
+  current_version: '2.0.0'
+  path: /api
+  header: X-API-VERSION
+  spec_location: https://docs.breadpayments.com/oas/v2/2.0/<domain>.openapi3.json
+  predecessor: >-
+    A "Bread Classic" generation of the API predates the 2.0 platform; its reference lived at
+    docs.breadpayments.com/bread-classic/ and the current documentation site no longer serves it.
+
+deprecation:
+  policy_published: false
+  sunset_header: not documented
+  deprecation_header: not documented
+  rfc8594: false
+  deprecated_operations:
+    - operationId: searchTransactions
+      path: GET /api/transaction/search
+      definition: openapi/bread-merchant-operations-openapi.json
+    - operationId: getLoanHistory
+      path: GET /api/reporting/report/loan-history
+      definition: openapi/bread-merchant-operations-openapi.json
+    - operationId: listFundingDailySummaryJSON
+      path: GET /api/reporting/report/funding-daily-summary
+      definition: openapi/bread-merchant-operations-openapi.json
+  note: >-
+    Three operations carry `deprecated: true` in the published contract — the machine signal is
+    there — but Bread publishes no deprecation policy, no removal date and no Sunset/Deprecation
+    response headers, so a consumer cannot tell how long a deprecated operation will keep answering.
+
+status_page:
+  published: false
+  note: >-
+    No public status page was found for the BreadPay Platform. Incident and availability
+    communication runs through the merchant's integration manager and the merchant portal.
+
+sla:
+  published: false
+  note: Service levels are set in the merchant agreement, not published.
+
+changelog:
+  published: false
+  note: >-
+    No public dated changelog. The mobile SDK docs reference an internal change history distributed
+    with the SDK to pilot brand partners.
+
+support:
+  docs: https://platform-docs.breadpayments.com/bread-onboarding/docs/support
+  mobile_sdk_contact: BreadFinancialMobileSupport@breadfinancial.com
+  partnership_contact: partnership-growth@getbread.com
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com

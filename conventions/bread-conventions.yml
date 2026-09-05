@@ -1,0 +1,230 @@
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://platform-docs.breadpayments.com/bread-developers/docs/api-access (OAuth 2.0 / bearer),
+  https://platform-docs.breadpayments.com/bread-developers/docs/webhook-concepts (CloudEvents + JWS),
+  https://platform-docs.breadpayments.com/bread-onboarding/docs/integration-testing (environments),
+  plus derivation from the nine first-party OpenAPI 3.0.3 definitions in openapi/
+  (181 operations) published at https://docs.breadpayments.com/oas/v2/2.0/
+provider: Bread Financial
+providerId: bread
+product: BreadPay Platform (Bread Pay)
+description: >-
+  Cross-cutting runtime semantics for the BreadPay Platform API — how authentication, versioning,
+  pagination, concurrency control, idempotency, errors and rate-limit signalling actually behave,
+  read from the provider's own OpenAPI definitions and developer documentation.
+
+authentication:
+  style: oauth2-client-credentials-then-bearer-jwt
+  summary: >-
+    Service accounts exchange an apiKey:secret pair, sent as HTTP Basic per RFC 7617, for a JWT
+    access token at the BreadPay authorization server; every subsequent API call carries
+    `Authorization: Bearer <jwt>` (RFC 6750). The token body is { token, tokenExpiresAt, tokenType }
+    and carries a `scope` claim describing the operations granted. Bearer tokens in query strings are
+    explicitly NOT supported.
+  schemes_in_spec:
+    - basicAuthService   # Foundations — token issuance
+    - bearerAuthBuyer
+    - bearerAuthApplication
+    - bearerAuthVirtualCard
+    - bearerAuthTransaction
+    - bearerAuthCarts
+    - bearerAuthReporting
+    - bearerAuthServicing
+    - bearerAuthDisclosure
+    - bearerAuthTradein
+    - bearerAuthProgram
+    - bearerAuth
+  docs: https://platform-docs.breadpayments.com/bread-developers/docs/api-access
+  cross_reference: authentication/bread-authentication.yml
+
+versioning:
+  scheme: major-in-path-plus-request-header
+  current: '2.0.0'
+  path_prefix: /api
+  header: X-API-VERSION
+  header_example: v2
+  header_coverage: 81 of 181 operations declare X-API-VERSION as a request header
+  spec_distribution: https://docs.breadpayments.com/oas/v2/2.0/<domain>.openapi3.json
+  note: >-
+    Nine domain definitions (buyer-management, checkout, foundations, merchant-operations, payments,
+    program, servicing, tradein, webhook) all carry info.version 2.0.0 and are published under the
+    /oas/v2/2.0/ path, so the document set is versioned as a whole rather than per domain.
+
+pagination:
+  style: limit-offset
+  params:
+    limit: maximum records to return
+    offset: zero-based record offset
+    sort: sort expression
+  response_field: pagination
+  coverage: 18 list operations declare limit + offset
+  filtering:
+    style: suffixed-field-operators
+    examples:
+      - merchantID.eq
+      - programID.eq
+      - createdAt.gte
+      - createdAt.lt
+      - id.like
+      - status.eq
+    operators: [eq, ne, gt, gte, lt, lte, like, in]
+    note: >-
+      Filters are expressed as query parameters named `<field>.<operator>`, a consistent convention
+      across list endpoints in every domain.
+
+field_selection:
+  expansion_param: include
+  note: >-
+    An `include` query parameter appears on four operations to expand related entities; there is no
+    sparse-fieldset (fields=) mechanism.
+
+concurrency:
+  style: optimistic-etag
+  read_header: Etag
+  write_header: If-Match
+  failure_status: 412
+  scope:
+    - getTransactionByID (returns the transaction revision Etag)
+    - authorizeTransaction
+    - settleTransaction
+    - cancelTransaction
+    - refundTransaction
+    - rescindTransaction
+  note: >-
+    Transaction state changes are guarded by an optimistic revision check rather than by idempotency
+    keys — If-Match is optional, and a mismatched revision returns 412 Precondition Failed.
+
+idempotency:
+  coverage: partial
+  scope:
+    - makePayment
+  mechanism: request header
+  header: xIdempotencyKey
+  header_documented_as: 'X-Idempotency-Key: Optional header for enabling idempotency'
+  required: false
+  retention: not documented
+  evidence: openapi/bread-servicing-openapi.json POST /api/servicing/payment-agreement/{id}/payment
+  note: >-
+    Exactly ONE of roughly ninety mutating operations across the nine definitions declares an
+    idempotency key, and it is optional there. Transaction-side replay protection is handled instead
+    by the ETag/If-Match revision check above, which prevents a stale repeat but is not an
+    idempotency key: a retried authorize with a fresh Etag will act again. Agents must not assume a
+    safe blind retry outside makePayment.
+
+request_tracing:
+  correlation_header: X-Bread-APP-ID
+  coverage: 5 operations
+  note: >-
+    No request-id echo header is documented on responses; webhook deliveries do carry a `ce-id`
+    UUID per CloudEvents.
+
+error_envelope:
+  format: bespoke-json
+  rfc9457: false
+  media_type: application/json
+  shape:
+    reason: A reason code specific to the service, unique within a domain
+    code: numeric HTTP-aligned code
+    message: human-readable message
+    domain: the emitting service domain (e.g. Payments)
+    metadata: object of per-property validation detail
+  example: '{"reason":"Reason_Code","code":500,"message":"Age cannot be less than 18","domain":"Payments","metadata":{"propertyName":"propertyName is required"}}'
+  cross_reference: errors/bread-problem-types.yml
+
+rate_limit_signaling:
+  documented: partial
+  status_on_exhaustion: 429
+  declared_on: 6 operations (all in the Checkout domain)
+  response_headers: none declared
+  guidance: 'The caller has exceeded the allowed request rate. Retry after a short back-off period.'
+  note: >-
+    No Retry-After, RateLimit-* or X-RateLimit-* response header is declared anywhere in the 181
+    published operations, and no numeric limit is published, so a client cannot compute a back-off
+    from the response. See rate-limits/bread-rate-limits.yml.
+  cross_reference: rate-limits/bread-rate-limits.yml
+
+events:
+  format: cloudevents-1.0.2-http-binding
+  signature_header: X-Jws-Signature
+  cross_reference: webhooks/bread-webhooks.yml
+
+environments:
+  - name: preview
+    api: https://api-preview.platform.breadpayments.com/api
+    sdk: https://connect-preview.breadpayments.com/sdk.js
+  - name: production
+    api: https://api.platform.breadpayments.com/api
+    sdk: https://connect.breadpayments.com/sdk.js
+  - name: partner-sandbox
+    api: https://entapi-sandbox.alldata.net/api/
+    note: mocked, stateless responses for Bread Financial's brand-partner B2B APIs
+
+reversibility:
+  grade: documented
+  summary: >-
+    The write surface is broadly reversible — 21 published operations undo, cancel, refund, rescind,
+    reverse or waive a prior action — but Bread publishes NO time window for any of them, so an agent
+    cannot tell before acting how long a reversal remains available. Upgrading this to `verified`
+    needs one sentence from Bread stating, for example, how long after settlement a refund is
+    accepted.
+  write_surface: ~90 mutating operations across 9 definitions
+  reversals:
+    - action: authorize a transaction
+      reversal: cancelTransaction
+      operation: POST /api/transaction/{transactionID}/cancel
+      partial: true
+      window: not documented
+    - action: settle a transaction
+      reversal: refundTransaction
+      operation: POST /api/transaction/{transactionID}/refund
+      window: not documented
+    - action: create a transaction
+      reversal: rescindTransaction
+      operation: POST /api/transaction/{transactionID}/rescind
+      window: not documented
+    - action: create a cart
+      reversal: deleteCart (soft delete) / expireCart
+      operation: DELETE /api/cart/{id} | POST /api/cart/{id}/expire
+      window: not documented
+    - action: take a payment
+      reversal: reversePayment (returns the reversed payment, or a created refund for ACH)
+      operation: PUT /api/payments/payment/reverse
+      window: not documented
+    - action: submit a payment
+      reversal: cancelPayment (pending payments only)
+      operation: PUT /api/payments/payment/cancel
+      window: pending state only — no elapsed-time window published
+    - action: schedule a future payment
+      reversal: cancelFuturePayment
+      operation: DELETE /api/servicing/payment-agreement/payment/{paymentID}/future/cancel-payment
+      window: not documented
+    - action: post a payment to a payment agreement
+      reversal: refundPayment
+      operation: POST /api/servicing/payment-agreement/{id}/payment/refund-payment
+      window: not documented
+    - action: open a payment agreement
+      reversal: cancelPaymentAgreement
+      operation: DELETE /api/servicing/payment-agreement/{id}/cancel-payment-agreement
+      window: not documented
+    - action: assess an amount / fee
+      reversal: waiveAmount, waiveRemaining, waiveRemainingOutstandingBalance, waiveAmountInstallmentDue, waivePrincipalAmount
+      window: not documented
+    - action: create a webhook subscription
+      reversal: deleteSubscription
+      operation: DELETE /api/webhook/subscription/{name}
+      window: not documented
+    - action: store a payment method
+      reversal: deletePaymentMethod
+      operation: DELETE /api/payments/payment-method/{paymentMethodID}
+      window: not documented
+
+dry_run_mode:
+  supported: false
+  note: >-
+    No dry-run, preview or simulate flag is declared on any operation. The published stand-in is the
+    Partner Sandbox (mocked, stateless) and the Preview environment — see sandbox/bread-sandbox.yml.
+
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com

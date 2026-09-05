@@ -1,0 +1,92 @@
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://platform-docs.breadpayments.com/bread-onboarding/docs/bread-sdk-installation, https://platform-docs.breadpayments.com/bread-onboarding/docs/installation-of-sdk, https://platform-docs.breadpayments.com/bread-onboarding/docs/registerplacements,
+  https://platform-docs.breadpayments.com/bread-onboarding/docs/events, https://platform-docs.breadpayments.com/bread-onboarding/docs/rendering-an-embedded-bread-modal, https://platform-docs.breadpayments.com/bread-onboarding/docs/unified-sdk-overview
+provider: Bread Financial
+providerId: bread
+description: >-
+  Client-side embeddable surfaces for BreadPay. These are hosted, Bread-rendered UI components a
+  merchant drops into their storefront — distinct from the REST API and from any SDK client library.
+
+loaders:
+  - name: Bread SDK
+    url: https://connect.breadpayments.com/sdk.js
+    global: window.BreadPayments
+    auth: integrationKey (public, per environment)
+  - name: Bread Unified SDK (EDS)
+    url: https://brand-sdk.kmsmep.com/unified/unified.sdk.js
+    attribute: data-bread-payments-key
+    stub: >-
+      An inline snippet (snippetVersion 1.3.1) stubs setup/on/submitRtps/checkout/registerPlacements so
+      calls made before the async bundle finishes loading are queued rather than lost.
+
+families:
+  - family: Placements
+    kind: inline dynamic callout
+    description: >-
+      Dynamic text callouts ("as low as $XX/month") rendered into a merchant-supplied div by domID.
+      Clicking one launches the Bread experience. Multiple placements per page, each with a unique id.
+    mount: '<div id="placement-pdp"></div>'
+    methods: [registerPlacements, openExperienceForPlacement]
+    config: UnifiedPlacementConfig, PlacementConfiguration, PlacementData
+    locations: [product detail page, cart, checkout, financing page]
+    financing_types: [card, installment]
+  - family: Bread Modal
+    kind: hosted overlay (zoid cross-domain component)
+    description: >-
+      The prequalification, application and checkout experience, rendered by Bread in an overlay.
+      Can also be launched programmatically or rendered embedded rather than as an overlay.
+    docs:
+      - https://platform-docs.breadpayments.com/bread-onboarding/docs/launching-the-bread-modal-programmatically
+      - https://platform-docs.breadpayments.com/bread-onboarding/docs/rendering-an-embedded-bread-modal
+      - https://platform-docs.breadpayments.com/bread-onboarding/docs/managing-zoid-sessions-within-single-page-applications
+      - https://platform-docs.breadpayments.com/bread-onboarding/docs/updating-the-shipping-address-in-bread-modal-programmatically
+    spa_note: Zoid session management is documented specifically for single-page applications.
+  - family: Enhanced Checkout (ECO)
+    kind: hosted checkout experience
+    docs: https://platform-docs.breadpayments.com/bread-onboarding/docs/configuring-enhanced-checkout
+    native: iOS and Android variants documented
+  - family: Prequalification and Prescreen
+    kind: hosted flow
+    variants: [Unified Prequalification, Real-Time Prescreen (RTPS), Batch Prescreen]
+    methods: [submitRtps]
+    bot_protection: Google reCAPTCHA (EDS Enhanced Bot Protection)
+    docs: https://platform-docs.breadpayments.com/bread-onboarding/docs/configuring-real-time-prescreen
+  - family: Financing Page
+    kind: hosted marketing/landing surface
+    docs: https://platform-docs.breadpayments.com/bread-onboarding/docs/financingpage-overview
+    per_platform: [Shopify, Magento, WooCommerce, BigCommerce]
+  - family: Dynamic Disclosures
+    kind: compliance-rendered content
+    description: >-
+      Regulatory disclosure text rendered dynamically alongside financing offers; also exposed on the
+      API side via the Servicing disclosure operations (generateDisclosures, getStaticDisclosure).
+    docs: https://platform-docs.breadpayments.com/bread-onboarding/docs/dynamic-presentment-of-disclosures
+
+events:
+  channel: BreadPayments.on(<event>, handler)
+  docs: https://platform-docs.breadpayments.com/bread-onboarding/docs/events
+  examples:
+    - INSTALLMENT:APPLICATION_DECISIONED
+    - INSTALLMENT:APPLICATION_CHECKOUT
+    - CARD:RECEIVE_APPLICATION_RESULT
+    - CARD:UNIFIED_OFFERS_RECEIVED
+    - CARD:ADD_TO_WALLET
+
+models:
+  - UnifiedSetupConfig
+  - UnifiedBuyer
+  - UnifiedAddress
+  - UnifiedPlacementConfig
+  - UnifiedRtpsConfig
+  - UnifiedOffersData
+  - UnifiedCheckoutResult
+  - CardResult
+  - AccountExistsResult
+  - MerchantConfiguration
+  - RTPSData
+
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com

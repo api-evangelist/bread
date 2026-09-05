@@ -1,0 +1,184 @@
+generated: '2026-09-04'
+method: derived
+source: >-
+  the nine first-party OpenAPI 3.0.3 definitions in openapi/ — 496 component schemas and their
+  id-reference fields
+provider: Bread Financial
+providerId: bread
+description: >-
+  Entity graph for the BreadPay Platform, derived from the id-reference fields the published schemas
+  carry. Bread's definitions are distributed fully dereferenced (no $ref), so relationships were read
+  from field naming (`<entity>ID`) rather than from schema links.
+
+schema_counts:
+  Buyer Management: 26
+  Checkout: 41
+  Foundations: 36
+  Merchant Operations: 53
+  Payments: 72
+  Program: 47
+  Servicing: 175
+  Tradein: 20
+  webhook: 26
+  total: 496
+
+identifier_convention:
+  format: UUID (schema UUID / NullUUID)
+  reference_field: <entity>ID
+  example: transactionID, buyerID, paymentAgreementID, merchantID, programID, tenantID
+  prefixes: none — Bread uses bare UUIDs, not typed prefixes.
+
+tenancy:
+  root: tenantID
+  note: >-
+    Every webhook payload and most resources carry an Identity object rooted at tenantID, then
+    narrowed by programID, merchantID, locationID and groupID. Authorization is scoped by this chain —
+    a merchant cannot read another merchant's transaction even knowing its id.
+
+entities:
+  - name: Tenant
+    domain: Foundations
+    note: Top of the identity chain; present on every webhook Identity object.
+  - name: Program
+    domain: Program
+    description: A financing programme — the payment products and policies that determine system behaviour.
+    most_referenced: true
+  - name: Merchant
+    domain: Merchant Operations
+    description: The selling party; carries locations, groups and org codes.
+  - name: Buyer
+    domain: Buyer Management
+    description: The consumer applying for and holding financing; carries contacts, credit report data,
+      authorized third parties and status.
+  - name: Application
+    domain: Checkout
+    description: A buyer's request for financing; decisioned to APPROVED / DENIED / INELIGIBLE.
+  - name: Transaction
+    domain: Merchant Operations
+    description: The merchant-facing purchase record; moves PENDING -> AUTHORIZED -> SETTLED, with
+      refund, cancel and rescind paths. Revisioned by Etag.
+  - name: Cart
+    domain: Merchant Operations
+    description: Pre-transaction basket; can be notified, expired or soft-deleted.
+  - name: PaymentAgreement
+    domain: Servicing
+    description: The loan / installment agreement created at checkout — the post-purchase spine.
+  - name: Payment
+    domain: Payments and Servicing
+    description: A money movement against a payment agreement; scheduled, pending, received, failed,
+      cancelled, refunded, returned, charged back.
+  - name: PaymentMethod
+    domain: Payments
+    description: A stored card or bank account, tokenizable via access and transient tokens.
+  - name: PaymentProduct
+    domain: Program
+    description: The financing product (installment, card, split pay) a program enrols a merchant into.
+  - name: Issuance / Card / Wallet
+    domain: Checkout
+    description: Virtual card issuance, Apple Pay / Google Pay provisioning and wallet retrieval.
+  - name: Disclosure
+    domain: Servicing
+    description: Regulatory disclosure documents generated per agreement, by name or by target.
+  - name: UpgradeableLoan
+    domain: Tradein
+    description: A loan eligible for the Apple upgrade / trade-in programme.
+  - name: Subscription / EventDispatch
+    domain: webhook
+    description: A subscriber endpoint and the events dispatched to it, with status and replay.
+
+relationships:
+  - from: Transaction
+    to: Merchant
+    type: belongs_to
+    via: merchantID
+  - from: Transaction
+    to: Buyer
+    type: belongs_to
+    via: buyerID
+  - from: Transaction
+    to: Application
+    type: belongs_to
+    via: applicationID
+  - from: Transaction
+    to: Program
+    type: belongs_to
+    via: programID
+  - from: Transaction
+    to: FulfillmentDetail
+    type: has_many
+    via: transactionID
+  - from: Cart
+    to: Merchant
+    type: belongs_to
+    via: merchantID
+  - from: Application
+    to: Buyer
+    type: belongs_to
+    via: buyerID
+  - from: Application
+    to: Program
+    type: belongs_to
+    via: programID
+  - from: PaymentAgreement
+    to: Buyer
+    type: belongs_to
+    via: buyerID
+  - from: PaymentAgreement
+    to: Payment
+    type: has_many
+    via: paymentAgreementID
+  - from: PaymentAgreement
+    to: Disclosure
+    type: has_many
+    via: paymentAgreementID
+  - from: Payment
+    to: PaymentMethod
+    type: belongs_to
+    via: paymentMethodID
+  - from: Buyer
+    to: BuyerContact
+    type: has_many
+    via: buyerID
+  - from: Buyer
+    to: AuthorizedThirdParty
+    type: has_many
+    via: buyerID
+  - from: Merchant
+    to: PaymentProductEnrollment
+    type: has_many
+    via: merchantID
+  - from: Program
+    to: PaymentProduct
+    type: has_many
+    via: programID
+  - from: UpgradeableLoan
+    to: PaymentAgreement
+    type: belongs_to
+    via: paymentAgreementID
+  - from: Issuance
+    to: Wallet
+    type: has_one
+    via: walletID
+  - from: Everything
+    to: Tenant
+    type: belongs_to
+    via: tenantID
+
+reference_field_frequency:
+  programID: 41
+  merchantID: 32
+  buyerID: 25
+  tenantID: 20
+  paymentMethodID: 17
+  transactionID: 16
+  partnerID: 13
+  paymentAgreementID: 13
+  scopeID: 8
+  paymentProductID: 7
+  applicationID: 5
+  paymentID: 5
+  locationID: 4
+
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com

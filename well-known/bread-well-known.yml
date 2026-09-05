@@ -1,0 +1,240 @@
+generated: '2026-09-04'
+method: probed
+source: live HTTP probes of every host named by apis.yml, the OpenAPI servers[] blocks and the docs host
+note: >-
+  No /.well-known document was served by any Bread Financial host. Every 200 recorded below is an
+  HTML shell, not a document: breadfinancial.com / breadpayments.com sit behind an Imperva bot
+  challenge that answers 200 with 'Pardon Our Interruption' for ANY path, and platform-docs is a
+  ReadMe SPA whose catch-all returns the docs shell. Because no path returned a real document, no
+  WellKnown, SecurityTxt or AgentCard pointer is emitted in apis.yml — this file records a measured
+  absence, not a published surface.
+hosts:
+- host: breadfinancial.com
+  note: Imperva bot-challenge HTML ('Pardon Our Interruption')
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/agent.json
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+- host: www.breadfinancial.com
+  note: Imperva bot-challenge HTML ('Pardon Our Interruption') returned for every path
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/api-catalog
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/agent-card.json
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/agent.json
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+- host: breadpayments.com
+  note: redirects to www.breadfinancial.com/en/business-solutions.html; Imperva bot-challenge HTML
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/api-catalog
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/agent-card.json
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/agent.json
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+- host: platform-docs.breadpayments.com
+  note: ReadMe SPA catch-all returns the docs HTML shell for unknown paths
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/agent-card.json
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/agent.json
+    status: 200
+    file: null
+    document: false
+    result: html-shell (not a document)
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+    result: absent
+- host: api.platform.breadpayments.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+    result: absent
+- host: api-preview.platform.breadpayments.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+    result: absent
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+    result: absent

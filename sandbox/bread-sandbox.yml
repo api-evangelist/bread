@@ -1,0 +1,79 @@
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://platform-docs.breadpayments.com/bread-onboarding/docs/integration-testing, https://platform-docs.breadpayments.com/bread-onboarding/docs/sandbox-overview, https://platform-docs.breadpayments.com/bread-onboarding/docs/sandbox-access,
+  https://platform-docs.breadpayments.com/bread-onboarding/docs/sandbox-request-scenarios, https://platform-docs.breadpayments.com/bread-onboarding/docs/sandbox-testing-with-postman
+provider: Bread Financial
+providerId: bread
+description: >-
+  Bread ships two distinct non-production surfaces: a Preview environment that mirrors production for
+  the BreadPay Platform, and a separate Partner Sandbox that returns mocked, stateless responses for
+  Bread Financial's brand-partner B2B APIs. They are not the same thing and they do not share a host.
+
+environments:
+  - name: preview
+    kind: functional test environment
+    api_base: https://api-preview.platform.breadpayments.com/api
+    sdk: https://connect-preview.breadpayments.com/sdk.js
+    keys: >-
+      Separate Preview integrationKey and API/secret keys, retrieved from the Bread Merchant Portal
+      Account Settings page. Production keys are issued by the integration manager at launch.
+    stateful: true
+    notes:
+      - No emails or SMS are delivered in Preview.
+      - Vary email and phone across test applications; duplicates cause submission failures.
+  - name: partner-sandbox
+    kind: mocked, non-functional
+    api_base: https://entapi-sandbox.alldata.net/api/
+    stateful: false
+    scope: Bread Financial brand-partner B2B APIs (Account, Acquisition, Auth, Rewards, Data Exchange)
+    auth: >-
+      Same credentials as UAT — HTTP Basic over base64(client_id:client_secret) in `authorization`,
+      plus a `client_token` header. 401 on bad credentials, 403 when the caller IP is outside the
+      allow-list registered with Bread Financial.
+    caveat: Not a replacement for UAT; functional testing and capability certification still run in UAT.
+
+test_data:
+  documented_in: https://platform-docs.breadpayments.com/bread-onboarding/docs/integration-testing
+  values:
+    - label: SplitPay test card
+      value: '4000000000000002'
+      note: Published test PAN for Split Pay checkout
+    - label: CVV
+      value: any 3 digits
+    - label: Expiration
+      value: any future date
+    - label: Mobile verification code / token
+      value: '1234'
+    - label: Birth date
+      value: any date before 2000
+    - label: SSN
+      value: any random 9 digits — not sequential or repeated
+    - label: Phone
+      value: any random 10 digits — not sequential or repeated
+  note: Values above are quoted verbatim from Bread's public testing documentation.
+
+scenario_control:
+  mechanism: switcher-field
+  description: >-
+    The Partner Sandbox designates a specific request element as a Switcher Field; the value placed in
+    it selects which mocked HTTP response comes back, so every success and error branch can be
+    exercised deterministically. Switcher values are published per API under the sandbox child pages
+    (Account, Acquisition, Auth, Rewards, Data Exchange).
+
+fixture_tooling:
+  postman_collection:
+    endpoint: GET https://entapi-sandbox.alldata.net/api/testscript
+    returns: a Postman Collection JSON, importable directly
+    auth: requires the UAT client_token and authorization headers
+  note: >-
+    The collection is generated on demand from the sandbox rather than published as a static file, so
+    there is no public Postman workspace to link.
+
+time_simulation:
+  supported: false
+  note: No test clock or time-travel facility is documented.
+
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com

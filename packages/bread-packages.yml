@@ -1,0 +1,103 @@
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://platform-docs.breadpayments.com/bread-onboarding/docs/bread-sdk-installation, https://platform-docs.breadpayments.com/bread-onboarding/docs/installation-of-sdk, https://platform-docs.breadpayments.com/bread-onboarding/docs/mobile-sdk-overview,
+  https://platform-docs.breadpayments.com/bread-onboarding/docs/integration-testing; registry checks against registry.npmjs.org, trunk.cocoapods.org and
+  api.github.com on 2026-09-04
+provider: Bread Financial
+providerId: bread
+description: >-
+  Bread Financial distributes NO client library through a public package registry. Its web SDK is a
+  CDN script tag on Bread-operated hosts, and its iOS/Android SDKs are handed directly to brand
+  partners in a pilot programme. Every version field below is therefore either read out of the served
+  bundle or recorded as null with the reason.
+
+registry_summary:
+  npm: none — no first-party @breadfinancial / @breadpayments scope or bread-* package exists
+  pypi: none
+  maven_central: none found
+  cocoapods: >-
+    none published to the public trunk; the iOS SDK requires CocoaPods 1.16.1+ to install but is
+    delivered privately (trunk.cocoapods.org/api/v1/pods/BreadPartnersSDK -> 404)
+  nuget: none
+  rubygems: none
+  packagist: none
+  crates: none
+  go: none
+
+packages:
+  - name: Bread SDK (web)
+    official: true
+    registry: cdn
+    language: JavaScript
+    distribution: script tag
+    url: https://connect.breadpayments.com/sdk.js
+    preview_url: https://connect-preview.breadpayments.com/sdk.js
+    global: window.BreadPayments
+    version: null
+    published: null
+    http_status: 200
+    last_modified: '2026-08-26'
+    note: >-
+      Unpinned floating distribution — the URL carries no version segment and the bundle exposes no
+      version string, so a merchant cannot tell which build they loaded or pin one. The only currency
+      signal available is the Last-Modified header (2026-08-26), which shows the bundle is actively
+      maintained.
+  - name: Bread Unified SDK (EDS / Enhanced Digital Suite)
+    official: true
+    registry: cdn
+    language: JavaScript
+    distribution: script tag with data-bread-payments-key attribute
+    url: https://brand-sdk.kmsmep.com/unified/unified.sdk.js
+    global: window.BreadPayments
+    snippet_version: 1.3.1
+    version: '3.49.0'
+    published: null
+    http_status: 200
+    last_modified: '2026-08-18'
+    note: >-
+      Version 3.49.0 was read from the served bundle itself; there is no registry metadata endpoint to
+      query and no publish date is exposed, so `published` is null. The URL is unpinned and Bread's own
+      documentation warns "the script url is subject to change". Methods: setup, on, submitRtps,
+      registerPlacements, checkout, openExperienceForPlacement.
+  - name: Bread Financial Brand Partners Mobile SDK (iOS)
+    official: true
+    registry: none
+    language: Swift
+    version: null
+    published: null
+    requirements: Xcode 16.2+, Swift 5.0+, CocoaPods 1.16.1+, iOS deployment target 15.0
+    distribution: >-
+      Delivered directly to a brand partner's named technical contact; available only to the initial
+      pilot group. Not on the public CocoaPods trunk.
+    support: BreadFinancialMobileSupport@breadfinancial.com
+    note: >-
+      Gated distribution — no public version, no public release history. A sample app ships with the
+      SDK.
+  - name: Bread Financial Brand Partners Mobile SDK (Android)
+    official: true
+    registry: none
+    language: Kotlin
+    version: null
+    published: null
+    requirements: Android API 24 (7.0 Nougat), Android Studio Jellyfish 2023.3.1+, Kotlin 1.9.22+
+    distribution: Delivered directly to pilot brand partners; not published to Maven Central.
+    support: BreadFinancialMobileSupport@breadfinancial.com
+
+ecommerce_plugins:
+  note: >-
+    Bread publishes platform integrations rather than SDKs for these; each is installed from the
+    platform's own marketplace, not from a language package registry.
+  platforms: [Shopify, Magento 2, WooCommerce, BigCommerce]
+  docs: https://platform-docs.breadpayments.com/bread-onboarding/docs/platform-integrations
+
+source_code:
+  github: https://github.com/breadfinancial
+  note: >-
+    One public repository (Documentation). The former https://github.com/getbread organisation, which
+    hosted the Magento/Shopify Bread extensions, now returns HTTP 404 and has been removed from
+    apis.yml as a dead pointer.
+
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com

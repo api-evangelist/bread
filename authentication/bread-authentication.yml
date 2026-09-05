@@ -1,0 +1,141 @@
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://platform-docs.breadpayments.com/bread-developers/docs/api-access (Bread's own API Access
+  guide) and the nine first-party OpenAPI 3.0.3 definitions in openapi/
+docs: https://platform-docs.breadpayments.com/bread-developers/docs/api-access
+provider: Bread Financial
+providerId: bread
+summary:
+  types:
+  - oauth2
+  - http
+  flow: client_credentials
+  runtime_scheme: bearer JWT
+description: >-
+  BreadPay Platform authentication. Bread states plainly that its APIs use OAuth 2.0 (RFC 6749) and
+  supports server-side, client-side and service-account (two-legged / client credentials) scenarios.
+  The OpenAPI definitions model only the RESULT of that flow — eleven http/bearer JWT schemes and one
+  http/basic scheme — so the OAuth flow itself is discoverable from the documentation, not from the
+  contract, and no authorization-server metadata document is published.
+flow:
+  grant: client_credentials
+  credential: apiKey and secret, issued per merchant
+  credential_source: >-
+    Bread Merchant Portal account settings; for service accounts, currently issued by the partnership
+    team (partnership-growth@getbread.com) pending portal self-service.
+  token_request: POST /api/auth/service/authorize (operationId authorizeService, Foundations)
+  token_request_auth: HTTP Basic per RFC 7617 — base64(apiKey:secret) in the Authorization header
+  token_response:
+    token: jwt
+    tokenExpiresAt: RFC 3339 timestamp
+    tokenType: Bearer
+  token_use: "Authorization: Bearer <jwt> header, per RFC 6750"
+  query_string_tokens: explicitly not supported
+  scope: >-
+    The access token carries a `scope` parameter representing the operations it grants. Bread does not
+    publish a scope inventory, so the granted set cannot be enumerated ahead of time — see
+    scopes/ (absent for this reason, not for lack of looking).
+  buyer_tokens: >-
+    A separate buyer-facing path exists in Foundations — buyerAuthorize, BuyerLogin, refreshBuyerToken,
+    exchangeBuyerToken and one-time verification codes (sendCode / verifyCode) — for consumer-facing
+    experiences rather than merchant server-to-server calls.
+  org_tokens: exchangeOrgToken and the org-code operations scope a token to a merchant organisation.
+schemes:
+- name: basicAuthService
+  type: http
+  scheme: basic
+  description: >-
+    The string 'Basic [apiKey]:[secret]' should be provided to the Authorization header where
+    '[apiKey]:[secret]' is base64 encoded. Used only to obtain an access token.
+  sources:
+  - openapi/bread-foundations-openapi.json
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: The JWT access token provided by the Auth service.
+  sources:
+  - openapi/bread-foundations-openapi.json
+- name: bearerAuthBuyer
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/bread-buyer-management-openapi.json
+- name: bearerAuthApplication
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/bread-checkout-openapi.json
+- name: bearerAuthVirtualCard
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/bread-checkout-openapi.json
+- name: bearerAuthTransaction
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/bread-merchant-operations-openapi.json
+- name: bearerAuthCarts
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/bread-merchant-operations-openapi.json
+- name: bearerAuthReporting
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/bread-merchant-operations-openapi.json
+- name: bearerAuthServicing
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/bread-servicing-openapi.json
+- name: bearerAuthDisclosure
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/bread-servicing-openapi.json
+- name: bearerAuthTradein
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/bread-tradein-openapi.json
+- name: bearerAuthProgram
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/bread-program-openapi.json
+- name: bearerAuthWebhook
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  sources:
+  - openapi/bread-webhook-openapi.json
+client_side:
+  integration_key: >-
+    The browser SDK authenticates with a public `integrationKey` (data-bread-payments-key attribute or
+    BreadPayments.setup), which is distinct from the server API key/secret pair and is safe to expose.
+partner_sandbox:
+  note: >-
+    Bread Financial's separate brand-partner Partner Sandbox uses a different scheme entirely — HTTP
+    Basic in `authorization` plus a `client_token` header, with source-IP allow-listing. See
+    sandbox/bread-sandbox.yml.
+discovery_documents:
+  openid_configuration: absent (probed 2026-09-04)
+  oauth_authorization_server: absent (probed 2026-09-04)
+  note: See well-known/bread-well-known.yml for the full probe record.
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com

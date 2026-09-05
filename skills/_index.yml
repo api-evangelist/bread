@@ -1,0 +1,33 @@
+generated: '2026-09-04'
+method: generated
+source: >-
+  authored from the nine first-party BreadPay Platform OpenAPI definitions in openapi/ and the
+  provider's developer documentation. Every operationId referenced was verified present in the
+  published contract. Bread Financial publishes no skills or AGENTS.md of its own.
+provider: Bread Financial
+providerId: bread
+description: >-
+  Packaged Agent Skills for the marquee BreadPay Platform flows — the merchant transaction lifecycle,
+  its reversals, the webhook surface, and servicing payments.
+skills:
+  - name: bread-authorize-and-settle-a-transaction
+    file: skills/bread-authorize-and-settle-a-transaction.md
+    api: Merchant Operations
+    operations: [getTransactionByID, authorizeTransaction, settleTransaction, addFulfillmentDetail]
+  - name: bread-refund-or-cancel-a-transaction
+    file: skills/bread-refund-or-cancel-a-transaction.md
+    api: Merchant Operations
+    operations: [getTransactionByID, cancelTransaction, refundTransaction, rescindTransaction]
+  - name: bread-subscribe-to-webhooks
+    file: skills/bread-subscribe-to-webhooks.md
+    api: webhook
+    operations: [createSubscription, getAllSubscriptions, getClientJWKs, createSubscriptionTest,
+      getEventBySubscriptionAndStatus, replayEventBySubscriptionNameAndEventID, deleteSubscription]
+  - name: bread-take-a-payment-on-a-payment-agreement
+    file: skills/bread-take-a-payment-on-a-payment-agreement.md
+    api: Servicing
+    operations: [listBuyerPaymentAgreements, getPaymentAgreement, calculatePayments, makePayment,
+      refundPayment]
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com

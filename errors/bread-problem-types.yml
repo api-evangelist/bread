@@ -1,0 +1,122 @@
+generated: '2026-09-04'
+method: derived
+source: >-
+  the nine first-party OpenAPI 3.0.3 definitions in openapi/ (181 operations), enriched from
+  https://platform-docs.breadpayments.com/bread-developers/reference/schemaerror
+provider: Bread Financial
+providerId: bread
+format: bespoke-json
+rfc9457: false
+media_type: application/json
+description: >-
+  Error catalogue for the BreadPay Platform API, derived from every 4xx/5xx response declared across
+  the nine published domain definitions plus the reason-code enumerations the specs carry. Bread does
+  NOT use RFC 9457 problem+json; it publishes its own envelope with a domain-scoped `reason` code.
+
+envelope:
+  fields:
+    reason: A reason code specific to the service; unique within a domain
+    code: Numeric code, aligned to the HTTP status
+    message: Human-readable message
+    domain: The emitting service domain (Payments, Auth, Buyer, ...)
+    metadata: Object carrying per-property validation detail
+  example: |
+    {
+      "reason": "Reason_Code",
+      "code": 500,
+      "message": "Age cannot be less than 18",
+      "domain": "Payments",
+      "metadata": { "propertyName": "propertyName is required" }
+    }
+
+status_codes:
+  - status: 400
+    title: Bad Request
+    meaning: Request validation failed; see metadata for the offending property
+    occurrences: 100
+    remediation: Fix the request body or query parameters; do not retry unchanged
+  - status: 401
+    title: Unauthorized
+    meaning: Provided credentials are not valid
+    occurrences: 176
+    remediation: Re-mint a JWT access token from the Foundations auth service (tokens expire; tokenExpiresAt is returned at issuance)
+  - status: 403
+    title: Forbidden
+    meaning: The request cannot be authorized — the token lacks the scope, or the resource belongs to another merchant
+    occurrences: 176
+    remediation: Check the token scope and the merchant/tenant context; in the Partner Sandbox a 403 also means the source IP is not whitelisted
+  - status: 404
+    title: Not Found
+    meaning: The requested resource was not found
+    occurrences: 52
+  - status: 409
+    title: Conflict
+    meaning: The request conflicts with an existing resource (duplicate buyer, existing subscription name)
+    occurrences: 4
+  - status: 410
+    title: Gone
+    meaning: Record no longer available
+    occurrences: 6
+  - status: 412
+    title: Precondition Failed
+    meaning: The If-Match transaction revision (Etag) did not match the current revision
+    occurrences: 5
+    remediation: Re-read the transaction with getTransactionByID to pick up the current Etag, then retry
+  - status: 422
+    title: Unprocessable Entity
+    meaning: Record no longer processable / application error
+    occurrences: 8
+  - status: 429
+    title: Too Many Requests
+    meaning: The caller has exceeded the allowed request rate
+    occurrences: 6
+    scope: Checkout domain only
+    remediation: Back off and retry — no Retry-After or RateLimit-* header is published
+  - status: 500
+    title: Internal Server Error
+    occurrences: 160
+  - status: 503
+    title: Service Unavailable
+    occurrences: 39
+
+reason_codes:
+  - domain: Buyer Management
+    schema: BuyerErrorReason
+    values: [Buyer_Validation, Buyer_Search_Validation, Buyer_Status_Validation, Contact_Validation,
+      Normalized_Address_Validation, Authorized_Third_Party_Validation, Credit_File_Validation,
+      Buyer_Phone_Invalid_Type, Request_Validation, Identity_Mismatch, Phone_Already_Exists,
+      Email_Already_Exists, Buyer_Conflict, Unauthorized, Unauthenticated, Buyer_Not_Found,
+      Authorized_Third_Parties_Not_Found, Contacts_Not_Found, Bankruptcies_Not_Found,
+      NormalizedAddressesNotFound]
+  - domain: Foundations (Auth)
+    schema: AuthErrorReason
+    values: [Request_Validation, Not_Found, Unauthenticated, Unauthenticated_Retry_With_PII,
+      Unauthenticated_Buyer_Mismatch, Unauthenticated_Buyer_Not_Found, Invalid_Token,
+      Too_Many_Code_Attempts, Too_Many_Unverified_Codes_Sent, Dependency_Unavailable, System_Failure,
+      Service_Unavailable]
+  - domain: Checkout (Virtual Card)
+    schema: VirtualCardError.reason
+    values: [Unauthorized, Request_Validation, Bad_Request, Not_Found, Unable_to_Authorize,
+      Unable_to_Settle, Internal_Server_Failure]
+  - domain: Program
+    schema: ProgramErrorReason / ExperienceErrorReason
+    values: [Unauthorized, Request_Validation, Not_Found, Internal_Server_Failure, Dependency_Unavailable]
+  - domain: Servicing (Payment Agreement)
+    schema: PaymentAgreementErrorReason
+    values: [Servicing_PaymentAgreement_BadRequest, Servicing_PaymentAgreement_InvalidIdentity,
+      Servicing_PaymentAgreement_ServerError]
+  - domain: Servicing (Disclosure)
+    schema: DisclosureErrorReason
+    values: [RESOURCE_NOT_FOUND, RETRIEVAL_ERROR, WRITE_ERROR, SERVICE_ERROR, VALIDATION_FAILURE,
+      INVARIANT_VIOLATED, SYSTEM_ERROR, POLICY_ERROR, BAD_AUTHENTICATION, NOT_AUTHORIZED, INVALID, UNKNOWN]
+  - domain: Tradein
+    schema: TradeinErrorReason
+    values: [Tradein_BadRequest, Tradein_InvalidIdentity, Tradein_ServerError]
+
+gaps:
+  - No RFC 9457 application/problem+json representation is offered.
+  - Reason codes are enumerated in the schemas but carry no per-code description or remediation text
+    in the published documentation, so a client can branch on them but cannot explain them to a user.
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com

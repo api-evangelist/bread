@@ -3,96 +3,58 @@ specificationVersion: '0.1'
 schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
 provider: Bread Financial
 providerId: bread
+generated: '2026-09-04'
+method: searched
+source: >-
+  https://platform-docs.breadpayments.com/bread-developers API reference (all 181 published operations) and the developer documentation, read
+  2026-09-04. Supersedes the 2026-05-04 bulk-sweep scaffold, whose tier numbers were invented
+  defaults and described no Bread Financial behaviour.
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
+modified: '2026-09-04'
 tags:
   - Buy Now Pay Later
   - BNPL
-  - Financing
   - Payments
-  - Credit
-  - Retail Finance
   - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the Bread Financial API surface. Captures per-tier
-  quotas, burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to
-  be replaced with published provider limits.
-headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
-responseCodes:
-  throttled: 429
-  quotaExceeded: 429
-  serviceUnavailable: 503
-limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - Bread Pay API
-      - Bread SplitPay API
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 1000
-    timeFrame: month
-    applies:
-      - Bread Pay API
-      - Bread SplitPay API
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - Bread Pay API
-      - Bread SplitPay API
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - Bread Pay API
-      - Bread SplitPay API
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - Bread Pay API
-      - Bread SplitPay API
-policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
+description: >-
+  Published rate-limit posture for the BreadPay Platform API. Bread declares a 429 status on part of
+  its surface but publishes no numeric limit, no window and no response headers — so a client cannot
+  compute a back-off and an agent cannot self-regulate.
+
+limit_count: 0
+limits: []
+
+signaling:
+  status_on_exhaustion: 429
+  declared_on:
+    - listApplications
+    - startApplication
+    - getApplication
+    - checkoutApplication
+    - prepareApplication
+    - checkoutInstoreApplication
+  declared_on_count: 6
+  total_operations: 181
+  scope: Checkout domain only — no other definition declares a 429
+  documented_guidance: 'The caller has exceeded the allowed request rate. Retry after a short back-off period.'
+  response_headers: []
+  retry_after: not published
+  ratelimit_headers: not published
+
+gaps:
+  - No numeric request limit is published for any tier, key or account.
+  - No Retry-After, RateLimit-Limit/Remaining/Reset or X-RateLimit-* header appears in any of the 181
+    published operations, so back-off must be blind exponential.
+  - 175 of 181 operations do not declare a 429 at all; whether they are unthrottled or simply
+    undocumented cannot be told from the contract.
+
+observed:
+  - host: platform-docs.breadpayments.com
+    note: >-
+      The DOCUMENTATION host (ReadMe, behind Cloudflare) does return x-ratelimit-limit: 100 with
+      x-ratelimit-remaining and x-ratelimit-reset. That is the docs site protecting itself, NOT the
+      BreadPay API, and it is recorded here only so a later reader does not mistake one for the other.
+
 maintainers:
   - FN: Kin Lane
     email: info@apievangelist.com

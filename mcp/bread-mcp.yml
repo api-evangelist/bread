@@ -1,0 +1,104 @@
+generated: '2026-09-04'
+method: derived
+status: candidate
+source: >-
+  derived from the nine first-party OpenAPI definitions in openapi/. Searched for an official Bread
+  Financial / BreadPay MCP server on 2026-09-04 — the developer documentation, the docs llms.txt, the
+  breadfinancial GitHub account and the npm registry — and found none.
+provider: Bread Financial
+providerId: bread
+description: >-
+  CANDIDATE tool surface only. Bread Financial ships no Model Context Protocol server, hosted or
+  local. The tools below are what an MCP server over the published BreadPay Platform contract would
+  expose; every one maps to a real, published operationId and inherits that operation's parameters.
+
+deployment:
+  mode: none
+  endpoint:
+  install:
+  package:
+  auth: oauth
+  verified: derived
+  note: >-
+    mode is none because no server exists — not because one is hidden. Bread's API is OAuth 2.0
+    client-credentials, so any future server would need per-merchant credentials; no endpoint URL is
+    guessed here.
+
+search_evidence:
+  - target: https://platform-docs.breadpayments.com/bread-developers (API reference, 279 pages)
+    result: no MCP mention
+  - target: https://platform-docs.breadpayments.com/bread-onboarding/llms.txt
+    result: no MCP mention across 130 indexed pages
+  - target: https://github.com/breadfinancial
+    result: one public repository (Documentation); no MCP server
+  - target: npm registry search (bread-financial, breadpayments, bread-sdk)
+    result: no first-party package
+
+candidate_tools:
+  - name: get_transaction
+    rest: getTransactionByID
+    operation: GET /api/transaction/{transactionID}
+    category: read
+  - name: list_transactions
+    rest: listTransactions
+    operation: GET /api/transaction
+    category: read
+  - name: authorize_transaction
+    rest: authorizeTransaction
+    operation: POST /api/transaction/{transactionID}/authorize
+    category: write
+    caution: moves a real financing transaction from PENDING to AUTHORIZED; guard with If-Match
+  - name: settle_transaction
+    rest: settleTransaction
+    operation: POST /api/transaction/{transactionID}/settle
+    category: write
+    caution: releases funds to the merchant
+  - name: refund_transaction
+    rest: refundTransaction
+    operation: POST /api/transaction/{transactionID}/refund
+    category: write
+  - name: cancel_transaction
+    rest: cancelTransaction
+    operation: POST /api/transaction/{transactionID}/cancel
+    category: write
+  - name: add_fulfillment_detail
+    rest: addFulfillmentDetail
+    operation: POST /api/transaction/{transactionID}/fulfillment
+    category: write
+  - name: get_application
+    rest: getApplication
+    operation: GET /api/application/{applicationID}
+    category: read
+  - name: get_buyer
+    rest: getBuyer
+    category: read
+    caution: returns consumer PII and credit-file data
+  - name: get_payment_agreement
+    rest: getPaymentAgreement
+    category: read
+  - name: list_buyer_payment_agreements
+    rest: listBuyerPaymentAgreements
+    category: read
+  - name: make_payment
+    rest: makePayment
+    operation: POST /api/servicing/payment-agreement/{id}/payment
+    category: write
+    idempotent: optional xIdempotencyKey supported
+  - name: get_as_low_as
+    rest: getAsLowAs
+    category: read
+  - name: create_webhook_subscription
+    rest: createSubscription
+    category: write
+  - name: replay_webhook_event
+    rest: replayEventBySubscriptionNameAndEventID
+    category: write
+
+pii_warning: >-
+  This API carries consumer credit-application data — names, dates of birth, SSNs, credit-file
+  results and adverse-action outcomes. Any MCP exposure of it is a regulated-data surface, not a
+  convenience layer.
+
+maintainers:
+  - FN: Kin Lane
+    email: info@apievangelist.com
